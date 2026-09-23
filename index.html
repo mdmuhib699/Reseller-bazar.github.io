@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>প্রোডাক্ট লেজার — SHP Bazar Reseller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Sans+Bengali:wght@400;600&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
+<style>
+  :root {
+    --ink: #1B2A4A;
+    --ink-soft: #4A5A7D;
+    --gold: #C1841F;
+    --gold-soft: #F3E3BF;
+    --paper: #F6F2E7;
+    --card: #FFFFFF;
+    --line: #E5DDC6;
+    --danger: #A63446;
+    --muted: #7A7261;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #ECE7D8;
+      --ink-soft: #B9B4A4;
+      --gold: #E3A83D;
+      --gold-soft: #3A2E14;
+      --paper: #14161B;
+      --card: #1D2027;
+      --line: #2B2E36;
+      --danger: #E4808C;
+      --muted: #98937F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #ECE7D8;
+    --ink-soft: #B9B4A4;
+    --gold: #E3A83D;
+    --gold-soft: #3A2E14;
+    --paper: #14161B;
+    --card: #1D2027;
+    --line: #2B2E36;
+    --danger: #E4808C;
+    --muted: #98937F;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans Bengali", -apple-system, sans-serif;
+    min-height: 100%;
+    max-width: 520px;
+    margin-inline: auto;
+    padding: 18px 14px 100px;
+  }
+  .num { font-family: "IBM Plex Mono", monospace; font-weight: 600; }
+
+  header { margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  h1 { font-family: "Fraunces", serif; font-weight: 600; font-size: 1.5rem; margin: 0 0 2px; letter-spacing: -0.01em; }
+  .tagline { color: var(--muted); font-size: 0.85rem; margin: 0; }
+
+  .sync-chip {
+    font-size: 0.68rem;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--muted);
+    white-space: nowrap;
+    flex: none;
+    margin-top: 2px;
+  }
+  .sync-chip.synced { color: var(--gold); }
+  .sync-chip.pending { color: var(--ink-soft); }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+  .stat { background: var(--card); border-radius: 10px; padding: 10px 8px; text-align: center; }
+  .stat .v { font-size: 1.05rem; color: var(--gold); display: block; }
+  .stat .l { font-size: 0.68rem; color: var(--muted); }
+
+  .util-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .ghost-btn {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.76rem;
+    font-family: inherit;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .fab {
+    position: fixed;
+    right: 20px;
+    bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    border: none;
+    background: var(--gold);
+    color: #1B1200;
+    font-size: 1.8rem;
+    line-height: 1;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    z-index: 15;
+  }
+
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 16, 0.5);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    z-index: 30;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; }
+  @media (min-width: 560px) { .modal-backdrop { align-items: center; } }
+
+  .panel {
+    background: var(--card);
+    border-radius: 18px 18px 0 0;
+    padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    max-width: 480px;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  @media (min-width: 560px) { .panel { border-radius: 18px; max-height: 80vh; } }
+  .panel h2 { font-family: "Fraunces", serif; font-size: 1.05rem; margin: 0 0 10px; }
+  .panel label { display: block; font-size: 0.76rem; color: var(--muted); margin: 10px 0 4px; }
+  .panel input, .panel select, .panel textarea {
+    width: 100%;
+    padding: 10px 11px;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 0.92rem;
+    font-family: inherit;
+    resize: vertical;
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .img-pick { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+  .img-preview { width: 52px; height: 52px; border-radius: 8px; border: 1px dashed var(--line); object-fit: cover; background: var(--paper); }
+  .panel-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .save-btn { flex: 1; padding: 12px; border: none; border-radius: 9px; background: var(--gold); color: #1B1200; font-weight: 600; font-family: inherit; }
+  .save-btn.danger-fill { background: var(--danger); color: #fff; }
+  .save-btn[disabled] { opacity: 0.6; }
+  .cancel-btn { padding: 12px 16px; border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--muted); font-family: inherit; }
+
+  .confirm-box { background: var(--card); border-radius: 16px; padding: 20px; width: 100%; max-width: 340px; margin: 0 16px; }
+  .confirm-box h3 { font-family: "Fraunces", serif; font-size: 1.05rem; margin: 0 0 6px; }
+  .confirm-box p { color: var(--muted); font-size: 0.85rem; margin: 0; }
+
+  .log-box { background: var(--card); border-radius: 16px; padding: 18px; width: 100%; max-width: 420px; margin: 0 16px; max-height: 75vh; display: flex; flex-direction: column; }
+  .log-box h3 { font-family: "Fraunces", serif; font-size: 1.05rem; margin: 0 0 10px; }
+  .log-list { overflow-y: auto; flex: 1; }
+  .log-entry { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 0.82rem; }
+  .log-entry:last-child { border-bottom: none; }
+  .log-entry .tag { font-size: 0.68rem; font-weight: 600; padding: 1px 7px; border-radius: 999px; margin-right: 6px; }
+  .log-entry .tag.add { background: var(--gold-soft); color: var(--gold); }
+  .log-entry .tag.edit { background: var(--gold-soft); color: var(--gold); }
+  .log-entry .tag.delete { background: rgba(166,52,70,0.12); color: var(--danger); }
+  .log-entry .tag.restore { background: rgba(166,52,70,0.12); color: var(--ink-soft); }
+  .log-entry .tag.sync { background: rgba(74,90,125,0.12); color: var(--ink-soft); }
+  .log-entry .time { color: var(--muted); font-size: 0.72rem; display: block; margin-top: 2px; }
+  .log-empty { color: var(--muted); font-size: 0.85rem; text-align: center; padding: 20px 0; }
+
+  .toolbar { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--paper); padding: 4px 0 10px; z-index: 5; }
+  #searchBox { width: 100%; padding: 12px 14px; font-size: 0.95rem; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-family: inherit; margin-bottom: 8px; }
+  .pills { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 8px; }
+  .pill { flex: none; padding: 6px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); font-size: 0.78rem; white-space: nowrap; font-family: inherit; }
+  .pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .sort-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .sort-row select { flex: none; width: auto; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 0.78rem; font-family: inherit; }
+  .count { font-size: 0.76rem; color: var(--muted); }
+
+  .card { background: var(--card); border: none; box-shadow: 0 1px 0 var(--line); border-radius: 14px; padding: 12px; margin-bottom: 10px; display: flex; gap: 12px; }
+  .thumb { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex: none; background: var(--gold-soft); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+  .card-body { flex: 1; min-width: 0; }
+  .card h3 { margin: 0; font-size: 0.95rem; line-height: 1.3; }
+  .cat-tag { font-size: 0.68rem; color: var(--gold); display: block; margin-top: 2px; }
+  .row { display: flex; justify-content: space-between; font-size: 0.84rem; padding: 2px 0; }
+  .label { color: var(--muted); }
+  .value.profit { color: var(--gold); }
+  .badge { display: inline-block; background: var(--gold-soft); color: var(--gold); font-size: 0.68rem; padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
+  .pending-badge { display: inline-block; background: rgba(74,90,125,0.12); color: var(--ink-soft); font-size: 0.65rem; padding: 2px 8px; border-radius: 999px; margin-top: 4px; margin-left: 4px; }
+  .note-box { background: var(--paper); border-radius: 8px; padding: 8px 10px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+  .note-text { font-size: 0.8rem; color: var(--ink-soft); white-space: pre-wrap; word-break: break-word; }
+  .note-copy { border: none; background: var(--gold); color: #1B1200; font-size: 0.72rem; font-weight: 600; flex: none; padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+
+  .note-edit-row { display: flex; gap: 6px; align-items: flex-start; margin-top: 6px; }
+  .note-edit-row textarea { flex: 1; min-height: 44px; font-size: 0.85rem; }
+  .note-del-btn { border: none; background: rgba(166,52,70,0.12); color: var(--danger); border-radius: 8px; width: 32px; height: 32px; flex: none; font-size: 0.85rem; }
+  .note-add-row { margin-top: 8px; }
+
+  .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .actions button { border: none; font-size: 0.76rem; font-weight: 600; padding: 8px 14px; border-radius: 999px; font-family: inherit; color: #fff; }
+  .actions .copy-btn { background: var(--ink-soft); }
+  .actions .edit-btn { background: var(--gold); color: #1B1200; }
+  .actions .del-btn { background: var(--danger); }
+
+  .empty { text-align: center; color: var(--muted); padding: 30px 10px; font-size: 0.9rem; }
+  .export-row { display: flex; gap: 8px; margin-top: 18px; }
+  .export-row button { flex: 1; }
+  .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 9px 16px; border-radius: 999px; font-size: 0.8rem; opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 40; }
+  .toast.show { opacity: 1; }
+
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>প্রোডাক্ট লেজার</h1>
+    <p class="tagline">SHP Bazar Reseller — দাম ও প্রফিট এক জায়গায়</p>
+  </div>
+  <span class="sync-chip" id="syncChip">⚪ লোড হচ্ছে...</span>
+</header>
+
+<div class="stats" id="statsRow"></div>
+
+<div class="util-row">
+  <button class="ghost-btn" id="backupBtn">⬇️ ব্যাকআপ</button>
+  <button class="ghost-btn" id="restoreBtn">⬆️ রিস্টোর</button>
+  <button class="ghost-btn" id="historyBtn">🕘 হিস্ট্রি</button>
+</div>
+<input type="file" id="restoreFile" accept="application/json" style="display:none">
+
+<button class="fab" id="toggleFormBtn" aria-label="নতুন প্রোডাক্ট যোগ করুন">+</button>
+
+<div class="modal-backdrop" id="modalBackdrop">
+<div class="panel" id="formPanel">
+  <h2 id="panelTitle">নতুন প্রোডাক্ট</h2>
+  <label>প্রোডাক্টের নাম</label>
+  <input type="text" id="inName" placeholder="যেমন: LED table lamp">
+
+  <label>বিভাগ</label>
+  <select id="inCategory">
+    <option value="ইলেকট্রনিক্স">ইলেকট্রনিক্স</option>
+    <option value="কিচেন">কিচেন</option>
+    <option value="বিউটি ও হেলথ">বিউটি ও হেলথ</option>
+    <option value="ফ্যাশন">ফ্যাশন</option>
+    <option value="ঘরোয়া টুলস">ঘরোয়া টুলস</option>
+    <option value="অন্যান্য">অন্যান্য</option>
+  </select>
+
+  <label>প্রোডাক্টের ছবি (ঐচ্ছিক)</label>
+  <div class="img-pick">
+    <img id="imgPreview" class="img-preview" src="" style="display:none">
+    <input type="file" id="inImage" accept="image/*">
+  </div>
+
+  <div class="field-row">
+    <div>
+      <label>অরিজিনাল প্রাইস (৳)</label>
+      <input type="number" id="inOriginal" placeholder="0">
+    </div>
+    <div>
+      <label>সেলিং প্রাইস (৳)</label>
+      <input type="number" id="inSelling" placeholder="0">
+    </div>
+  </div>
+  <div class="field-row">
+    <div>
+      <label>প্রফিট (৳) — ফাঁকা রাখলে অটো হিসাব হবে</label>
+      <input type="number" id="inProfit" placeholder="0">
+    </div>
+    <div>
+      <label>ফ্রি ডেলিভারি প্রফিট (৳)</label>
+      <input type="number" id="inFreeDelivery" placeholder="0">
+    </div>
+  </div>
+
+  <label>নোটসমূহ <span style="font-weight:400">(একাধিক যোগ করা যাবে)</span></label>
+  <div id="notesList"></div>
+  <div class="note-add-row">
+    <textarea id="newNoteInput" rows="2" placeholder="নতুন নোট লিখুন..."></textarea>
+    <button type="button" class="ghost-btn" id="addNoteBtn" style="margin-top:6px;width:100%">+ নোট যোগ করুন</button>
+  </div>
+
+  <div class="panel-actions">
+    <button class="save-btn" id="saveBtn">সেভ করুন</button>
+    <button class="cancel-btn" id="cancelBtn">বাতিল</button>
+  </div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="confirmBackdrop">
+  <div class="confirm-box">
+    <h3 id="confirmTitle">নিশ্চিত করুন</h3>
+    <p id="confirmMsg"></p>
+    <div class="panel-actions">
+      <button class="save-btn danger-fill" id="confirmOkBtn">নিশ্চিত</button>
+      <button class="cancel-btn" id="confirmCancelBtn">বাতিল</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="historyBackdrop">
+  <div class="log-box">
+    <h3>হিস্ট্রি</h3>
+    <div class="log-list" id="logList"></div>
+    <div class="panel-actions">
+      <button class="cancel-btn" id="closeHistoryBtn" style="width:100%">বন্ধ করুন</button>
+    </div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <input id="searchBox" type="text" placeholder="প্রোডাক্টের নাম লিখুন..." autocomplete="off">
+  <div class="pills" id="categoryPills"></div>
+  <div class="sort-row">
+    <span class="count" id="countText"></span>
+    <select id="sortSelect">
+      <option value="name">নাম (A-Z)</option>
+      <option value="profit_desc">প্রফিট (বেশি → কম)</option>
+      <option value="price_asc">দাম (কম → বেশি)</option>
+    </select>
+  </div>
+</div>
+
+<div id="results"></div>
+
+<div class="export-row">
+  <button class="ghost-btn" id="exportExcel">📊 Excel এক্সপোর্ট</button>
+  <button class="ghost-btn" id="exportPdf">📄 PDF এক্সপোর্ট</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CATEGORY_EMOJI = {
+  "ইলেকট্রনিক্স": "🔌", "কিচেন": "🍳", "বিউটি ও হেলথ": "💄",
+  "ফ্যাশন": "👕", "ঘরোয়া টুলস": "🧰", "অন্যান্য": "📦"
+};
+const PRODUCTS_KEY = 'shp_bazar_products_v2';
+const LOGS_KEY = 'shp_bazar_logs_v2';
+const PENDING_KEY = 'shp_bazar_pending_v2';
+const TOMBSTONE_KEY = 'shp_bazar_tombstones_v2';
+const MAX_LOGS = 200;
+const SUPABASE_URL = 'https://ykyzltakleyixtxcxpcj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlreXpsdGFrbGV5aXh0eGN4cGNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3MTMwNzUsImV4cCI6MjA3NzI4OTA3NX0.eaejfQjurimD_kFirlTKY5nyu9wuv-oPtjGrzey2pGQ';
+
+const SEED_PRODUCTS = [
+  { name: "Electric Grape peeler machine", category: "কিচেন", original: 900, selling: 1300, profit: 400, freeDeliveryProfit: 270 },
+  { name: "Prestige mini Cooking pot 2 liter", category: "কিচেন", original: 770, selling: 1000, profit: 230, freeDeliveryProfit: 100 },
+  { name: "Km-2519 Kemei hair straightener", category: "বিউটি ও হেলথ", original: 950, selling: 1150, profit: 200, freeDeliveryProfit: 70 },
+  { name: "1L Automatic yogurt maker", category: "কিচেন", original: 350, selling: 499, profit: 149, freeDeliveryProfit: null },
+  { name: "Mini air cooler fan", category: "ইলেকট্রনিক্স", original: 800, selling: 1000, profit: 200, freeDeliveryProfit: 70 },
+  { name: "Mini water purifier", category: "ঘরোয়া টুলস", original: 320, selling: 500, profit: 180, freeDeliveryProfit: null },
+  { name: "2.8 Liter Hawkins Rice Cooker", category: "কিচেন", original: 2700, selling: 3000, profit: 300, freeDeliveryProfit: 170 },
+  { name: "Spiral potato slicer", category: "কিচেন", original: 850, selling: 1000, profit: 150, freeDeliveryProfit: null },
+  { name: "Mini Waffle maker 350 watt", category: "কিচেন", original: 950, selling: 1150, profit: 200, freeDeliveryProfit: null },
+  { name: "Multifunctional 5 layer shoe rack", category: "ঘরোয়া টুলস", original: 350, selling: 450, profit: 100, freeDeliveryProfit: null }
+];
+const RESET_MARKER_KEY = 'shp_bazar_reset_v3';
+const RESET_ID_PREFIX = 'reset3_';
+const RESET_TS = new Date('2026-09-01T00:00:00Z').getTime();
+
+function uid() { return 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8); }
+function templateNoteText(name, price) {
+  const n = (name && name.trim()) ? name.trim() : '[Product Name]';
+  const p = (price !== '' && price !== undefined && price !== null) ? price : '[Price]';
+  return `জি 😊 ${n}-এর দাম মাত্র ${p} টাকা।`;
+}
+
+// ---------- local persistence ----------
+function loadProducts() {
+  try {
+    const raw = localStorage.getItem(PRODUCTS_KEY);
+    let list;
+    if (!raw) {
+      list = SEED_PRODUCTS.map(p => ({ id: uid(), ...p, updatedAt: Date.now(), synced: false }));
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list));
+    } else {
+      list = JSON.parse(raw);
+    }
+    return list.map(p => {
+      let fixed = p;
+      if (!Array.isArray(fixed.notes)) fixed = { ...fixed, notes: fixed.note ? [fixed.note] : [] };
+      if (!fixed.updatedAt) fixed = { ...fixed, updatedAt: Date.now() };
+      if (typeof fixed.synced !== 'boolean') fixed = { ...fixed, synced: false };
+      return fixed;
+    });
+  } catch (e) { console.error('Load products failed:', e); return []; }
+}
+function saveProductsLocal(list) {
+  try { localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list)); return true; }
+  catch (e) { console.error('Save products failed:', e); return false; }
+}
+function loadLogs() { try { const raw = localStorage.getItem(LOGS_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+function saveLogs(list) { try { localStorage.setItem(LOGS_KEY, JSON.stringify(list.slice(0, MAX_LOGS))); } catch (e) {} }
+function addLog(action, name, details) {
+  const logs = loadLogs();
+  logs.unshift({ ts: Date.now(), action, name, details: details || '' });
+  saveLogs(logs);
+}
+function loadPending() { try { const raw = localStorage.getItem(PENDING_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+function savePending(list) { try { localStorage.setItem(PENDING_KEY, JSON.stringify(list)); } catch (e) {} }
+function loadTombstones() { try { const raw = localStorage.getItem(TOMBSTONE_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+function saveTombstones(list) {
+  const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  try { localStorage.setItem(TOMBSTONE_KEY, JSON.stringify(list.filter(t => t.deletedAt > cutoff))); } catch (e) {}
+}
+
+// ---------- state ----------
+let allDocs = [];
+let activeCategory = "সব";
+let editingId = null;
+let confirmCallback = null;
+let formNotes = [];
+let templateAutoActive = false;
+let db = null;
+let pendingQueue = loadPending();
+
+const els = {
+  toggleFormBtn: document.getElementById('toggleFormBtn'),
+  modalBackdrop: document.getElementById('modalBackdrop'),
+  formPanel: document.getElementById('formPanel'),
+  panelTitle: document.getElementById('panelTitle'),
+  saveBtn: document.getElementById('saveBtn'),
+  cancelBtn: document.getElementById('cancelBtn'),
+  confirmBackdrop: document.getElementById('confirmBackdrop'),
+  confirmTitle: document.getElementById('confirmTitle'),
+  confirmMsg: document.getElementById('confirmMsg'),
+  confirmOkBtn: document.getElementById('confirmOkBtn'),
+  confirmCancelBtn: document.getElementById('confirmCancelBtn'),
+  historyBackdrop: document.getElementById('historyBackdrop'),
+  historyBtn: document.getElementById('historyBtn'),
+  closeHistoryBtn: document.getElementById('closeHistoryBtn'),
+  logList: document.getElementById('logList'),
+  backupBtn: document.getElementById('backupBtn'),
+  restoreBtn: document.getElementById('restoreBtn'),
+  restoreFile: document.getElementById('restoreFile'),
+  searchBox: document.getElementById('searchBox'),
+  categoryPills: document.getElementById('categoryPills'),
+  sortSelect: document.getElementById('sortSelect'),
+  countText: document.getElementById('countText'),
+  results: document.getElementById('results'),
+  statsRow: document.getElementById('statsRow'),
+  inImage: document.getElementById('inImage'),
+  imgPreview: document.getElementById('imgPreview'),
+  notesList: document.getElementById('notesList'),
+  newNoteInput: document.getElementById('newNoteInput'),
+  addNoteBtn: document.getElementById('addNoteBtn'),
+  toast: document.getElementById('toast'),
+  syncChip: document.getElementById('syncChip')
+};
+
+function taka(n) { return (n === null || n === undefined || n === "") ? "—" : n + "৳"; }
+function showToast(msg) {
+  els.toast.textContent = msg;
+  els.toast.classList.add('show');
+  setTimeout(() => els.toast.classList.remove('show'), 1800);
+}
+function updateSyncChip() {
+  if (!db) {
+    els.syncChip.textContent = '⚪ লোকাল মোড';
+    els.syncChip.className = 'sync-chip';
+  } else if (pendingQueue.length > 0) {
+    els.syncChip.textContent = '🟡 সিঙ্ক পেন্ডিং (' + pendingQueue.length + ')';
+    els.syncChip.className = 'sync-chip pending';
+  } else {
+    els.syncChip.textContent = '🟢 সিঙ্ক সক্রিয়';
+    els.syncChip.className = 'sync-chip synced';
+  }
+}
+
+function stripInternal(p) {
+  const { synced, ...rest } = p;
+  return rest;
+}
+
+function queuePending(op) {
+  pendingQueue = pendingQueue.filter(o => !(o.id === op.id && o.type === op.type));
+  pendingQueue = pendingQueue.filter(o => !(o.id === op.id && op.type === 'delete'));
+  pendingQueue.push(op);
+  savePending(pendingQueue);
+  updateSyncChip();
+}
+
+async function flushPending() {
+  if (!db || pendingQueue.length === 0) { updateSyncChip(); return; }
+  const upserts = pendingQueue.filter(o => o.type === 'upsert');
+  const deletes = pendingQueue.filter(o => o.type === 'delete');
+  const failed = [];
+
+  if (upserts.length > 0) {
+    try {
+      await db.collection('products').upsertMany(upserts.map(o => stripInternal(o.data)));
+      upserts.forEach(o => {
+        const idx = allDocs.findIndex(p => p.id === o.id);
+        if (idx !== -1) allDocs[idx].synced = true;
+      });
+    } catch (e) {
+      console.error('Bulk sync push failed:', e);
+      failed.push(...upserts);
+    }
+  }
+  if (deletes.length > 0) {
+    try {
+      await db.collection('products').deleteMany(deletes.map(o => o.id));
+    } catch (e) {
+      console.error('Bulk delete push failed:', e);
+      failed.push(...deletes);
+    }
+  }
+
+  pendingQueue = failed;
+  savePending(pendingQueue);
+  saveProductsLocal(allDocs);
+  updateSyncChip();
+}
+
+// ---------- image resize ----------
+function resizeImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 200;
+        let w = img.width, h = img.height;
+        if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+        else if (h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.6));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+els.inImage.addEventListener('change', async () => {
+  const file = els.inImage.files[0];
+  if (!file) return;
+  try {
+    const dataUrl = await resizeImage(file);
+    els.imgPreview.src = dataUrl;
+    els.imgPreview.style.display = 'block';
+    els.imgPreview.dataset.value = dataUrl;
+  } catch (e) { console.error('Image resize failed:', e); }
+});
+
+// ---------- notes editor ----------
+function renderNotesList() {
+  if (formNotes.length === 0) {
+    els.notesList.innerHTML = '<div style="font-size:0.78rem;color:var(--muted);padding:4px 0;">কোনো নোট নেই</div>';
+  } else {
+    els.notesList.innerHTML = formNotes.map((n, i) => `
+      <div class="note-edit-row">
+        <textarea data-idx="${i}" rows="2">${n}</textarea>
+        <button type="button" class="note-del-btn" data-idx="${i}" title="নোট মুছুন">✕</button>
+      </div>
+    `).join('');
+    els.notesList.querySelectorAll('textarea').forEach(ta => {
+      ta.addEventListener('input', () => {
+        const idx = Number(ta.getAttribute('data-idx'));
+        formNotes[idx] = ta.value;
+        if (idx === 0) templateAutoActive = false;
+      });
+    });
+    els.notesList.querySelectorAll('.note-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.getAttribute('data-idx'));
+        if (idx === 0) templateAutoActive = false;
+        formNotes.splice(idx, 1);
+        renderNotesList();
+      });
+    });
+  }
+}
+els.addNoteBtn.addEventListener('click', () => {
+  const val = els.newNoteInput.value.trim();
+  if (!val) return;
+  formNotes.push(val);
+  els.newNoteInput.value = '';
+  renderNotesList();
+});
+function syncTemplateNote() {
+  if (!templateAutoActive) return;
+  const name = document.getElementById('inName').value;
+  const price = document.getElementById('inSelling').value;
+  formNotes[0] = templateNoteText(name, price);
+  renderNotesList();
+}
+document.getElementById('inName').addEventListener('input', syncTemplateNote);
+document.getElementById('inSelling').addEventListener('input', syncTemplateNote);
+
+// ---------- add/edit panel ----------
+function openPanel(mode, doc) {
+  editingId = null;
+  els.modalBackdrop.classList.add('open');
+  if (mode === 'edit' && doc) {
+    editingId = doc.id;
+    els.panelTitle.textContent = 'প্রোডাক্ট এডিট করুন';
+    document.getElementById('inName').value = doc.name || '';
+    document.getElementById('inCategory').value = doc.category || 'অন্যান্য';
+    document.getElementById('inOriginal').value = doc.original ?? '';
+    document.getElementById('inSelling').value = doc.selling ?? '';
+    document.getElementById('inProfit').value = doc.profit ?? '';
+    document.getElementById('inFreeDelivery').value = doc.freeDeliveryProfit ?? '';
+    formNotes = Array.isArray(doc.notes) ? [...doc.notes] : [];
+    templateAutoActive = false;
+    if (doc.image) { els.imgPreview.src = doc.image; els.imgPreview.style.display = 'block'; els.imgPreview.dataset.value = doc.image; }
+    else { els.imgPreview.style.display = 'none'; els.imgPreview.dataset.value = ''; }
+  } else {
+    els.panelTitle.textContent = 'নতুন প্রোডাক্ট';
+    ['inName','inOriginal','inSelling','inProfit','inFreeDelivery'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('inCategory').value = 'ইলেকট্রনিক্স';
+    els.inImage.value = '';
+    els.imgPreview.style.display = 'none';
+    els.imgPreview.dataset.value = '';
+    formNotes = [templateNoteText('', '')];
+    templateAutoActive = true;
+  }
+  els.newNoteInput.value = '';
+  renderNotesList();
+}
+function closePanel() { els.modalBackdrop.classList.remove('open'); editingId = null; }
+els.toggleFormBtn.addEventListener('click', () => openPanel('add'));
+els.cancelBtn.addEventListener('click', closePanel);
+els.modalBackdrop.addEventListener('click', (e) => { if (e.target === els.modalBackdrop) closePanel(); });
+
+els.saveBtn.addEventListener('click', async () => {
+  const name = document.getElementById('inName').value.trim();
+  const category = document.getElementById('inCategory').value;
+  const original = document.getElementById('inOriginal').value;
+  const selling = document.getElementById('inSelling').value;
+  let profit = document.getElementById('inProfit').value;
+  const freeDelivery = document.getElementById('inFreeDelivery').value;
+  const notes = formNotes.map(n => n.trim()).filter(Boolean);
+  const image = els.imgPreview.dataset.value || null;
+
+  if (!name || !selling) { alert('অন্তত প্রোডাক্টের নাম আর সেলিং প্রাইস দিন'); return; }
+  if (profit === "" && original !== "" && selling !== "") profit = Number(selling) - Number(original);
+
+  const id = editingId || uid();
+  const data = {
+    id, name, category,
+    original: original === "" ? null : Number(original),
+    selling: Number(selling),
+    profit: profit === "" ? null : Number(profit),
+    freeDeliveryProfit: freeDelivery === "" ? null : Number(freeDelivery),
+    notes, image,
+    updatedAt: Date.now(),
+    synced: false
+  };
+
+  els.saveBtn.disabled = true;
+  const originalLabel = els.saveBtn.textContent;
+  els.saveBtn.textContent = 'সেভ হচ্ছে...';
+
+  try {
+    let list = loadProducts();
+    if (editingId) {
+      list = list.map(p => p.id === editingId ? data : p);
+      addLog('edit', name);
+      showToast('আপডেট হয়েছে');
+    } else {
+      list.push(data);
+      addLog('add', name);
+      showToast('যোগ হয়েছে');
+    }
+    saveProductsLocal(list);
+    allDocs = list;
+    closePanel();
+    render();
+
+    // background push — never blocks the UI
+    if (db) {
+      db.collection('products').doc(id).set(stripInternal(data)).then(() => {
+        const idx = allDocs.findIndex(p => p.id === id);
+        if (idx !== -1) { allDocs[idx].synced = true; saveProductsLocal(allDocs); updateSyncChip(); }
+      }).catch(() => { queuePending({ type: 'upsert', id, data }); });
+    } else {
+      queuePending({ type: 'upsert', id, data });
+    }
+  } catch (e) {
+    console.error('Save failed:', e);
+    alert('সেভ করতে সমস্যা হয়েছে');
+  } finally {
+    els.saveBtn.disabled = false;
+    els.saveBtn.textContent = originalLabel;
+  }
+});
+
+// ---------- confirm modal ----------
+function showConfirm(title, msg, okLabel, onOk) {
+  els.confirmTitle.textContent = title;
+  els.confirmMsg.textContent = msg;
+  els.confirmOkBtn.textContent = okLabel;
+  confirmCallback = onOk;
+  els.confirmBackdrop.classList.add('open');
+}
+els.confirmCancelBtn.addEventListener('click', () => { confirmCallback = null; els.confirmBackdrop.classList.remove('open'); });
+els.confirmBackdrop.addEventListener('click', (e) => { if (e.target === els.confirmBackdrop) { confirmCallback = null; els.confirmBackdrop.classList.remove('open'); } });
+els.confirmOkBtn.addEventListener('click', async () => {
+  if (!confirmCallback) return;
+  const cb = confirmCallback;
+  els.confirmOkBtn.disabled = true;
+  try { await cb(); } finally { els.confirmOkBtn.disabled = false; confirmCallback = null; els.confirmBackdrop.classList.remove('open'); }
+});
+
+function askDelete(id) {
+  const p = allDocs.find(x => x.id === id);
+  if (!p) return;
+  showConfirm('প্রোডাক্ট মুছে ফেলবেন?', `"${p.name}" — এই কাজ আর ফিরিয়ে নেওয়া যাবে না।`, 'মুছে ফেলুন', () => {
+    const list = loadProducts().filter(x => x.id !== id);
+    saveProductsLocal(list);
+    allDocs = list;
+    const tombs = loadTombstones();
+    tombs.push({ id, deletedAt: Date.now() });
+    saveTombstones(tombs);
+    pendingQueue = pendingQueue.filter(o => !(o.id === id && o.type === 'upsert'));
+    savePending(pendingQueue);
+    addLog('delete', p.name);
+    showToast('মুছে ফেলা হয়েছে');
+    render();
+
+    if (db) {
+      db.collection('products').doc(id).delete().catch(() => { queuePending({ type: 'delete', id }); });
+    } else {
+      queuePending({ type: 'delete', id });
+    }
+  });
+}
+
+function copyText(text, msg) {
+  navigator.clipboard.writeText(text).then(() => showToast(msg || 'কপি হয়েছে'), () => showToast('কপি করা যায়নি'));
+}
+function copyProduct(p) {
+  const lines = [p.name, p.category ? `বিভাগ: ${p.category}` : null, `দাম: ${taka(p.selling)}`, p.freeDeliveryProfit ? `ফ্রি ডেলিভারি সহ প্রফিট: ${taka(p.freeDeliveryProfit)}` : null].filter(Boolean).join('\n');
+  copyText(lines);
+}
+
+// ---------- render ----------
+function renderStats(list) {
+  const total = list.length;
+  const totalProfit = list.reduce((s, p) => s + (Number(p.profit) || 0), 0);
+  const avgProfit = total ? Math.round(totalProfit / total) : 0;
+  els.statsRow.innerHTML = `
+    <div class="stat"><span class="v num">${total}</span><span class="l">মোট প্রোডাক্ট</span></div>
+    <div class="stat"><span class="v num">${totalProfit}৳</span><span class="l">মোট সম্ভাব্য প্রফিট</span></div>
+    <div class="stat"><span class="v num">${avgProfit}৳</span><span class="l">গড় প্রফিট</span></div>
+  `;
+}
+function renderPills() {
+  const categories = ["সব", ...new Set(allDocs.map(p => p.category).filter(Boolean))];
+  els.categoryPills.innerHTML = categories.map(c => `<button class="pill${c === activeCategory ? ' active' : ''}" data-cat="${c}">${c}</button>`).join('');
+  els.categoryPills.querySelectorAll('.pill').forEach(btn => btn.addEventListener('click', () => { activeCategory = btn.getAttribute('data-cat'); render(); }));
+}
+function sortList(list) {
+  const mode = els.sortSelect.value;
+  const copy = [...list];
+  if (mode === 'name') copy.sort((a, b) => a.name.localeCompare(b.name));
+  else if (mode === 'profit_desc') copy.sort((a, b) => (Number(b.profit) || 0) - (Number(a.profit) || 0));
+  else if (mode === 'price_asc') copy.sort((a, b) => (Number(a.selling) || 0) - (Number(b.selling) || 0));
+  return copy;
+}
+
+function render() {
+  const q = els.searchBox.value.trim().toLowerCase();
+  let list = allDocs;
+  if (activeCategory !== "সব") list = list.filter(p => p.category === activeCategory);
+  if (q) list = list.filter(p => p.name.toLowerCase().includes(q));
+  list = sortList(list);
+
+  renderStats(allDocs);
+  renderPills();
+  els.countText.textContent = list.length + " টি প্রোডাক্ট";
+  updateSyncChip();
+
+  els.results.innerHTML = "";
+  if (list.length === 0) {
+    els.results.innerHTML = '<div class="empty">কোনো প্রোডাক্ট মিলেনি 🙁</div>';
+    return;
+  }
+
+  list.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const thumbContent = p.image ? `<img class="thumb" src="${p.image}" alt="">` : `<div class="thumb">${CATEGORY_EMOJI[p.category] || '📦'}</div>`;
+    const isPending = pendingQueue.some(o => o.id === p.id);
+    card.innerHTML = `
+      ${thumbContent}
+      <div class="card-body">
+        <h3>${p.name}</h3>
+        ${p.category ? `<span class="cat-tag">${p.category}</span>` : ''}
+        <div class="row"><span class="label">অরিজিনাল</span><span class="value num">${taka(p.original)}</span></div>
+        <div class="row"><span class="label">সেলিং</span><span class="value num">${taka(p.selling)}</span></div>
+        <div class="row"><span class="label">প্রফিট</span><span class="value profit num">${taka(p.profit)}</span></div>
+        <div class="row"><span class="label">ফ্রি ডেলিভারি প্রফিট</span><span class="value profit num">${taka(p.freeDeliveryProfit)}</span></div>
+        ${(p.freeDeliveryProfit === null || p.freeDeliveryProfit === undefined) ? '<span class="badge">ফ্রি ডেলিভারি নেই</span>' : ''}
+        ${isPending ? '<span class="pending-badge">🟡 সিঙ্ক বাকি</span>' : ''}
+        ${(p.notes && p.notes.length) ? p.notes.map(n => `<div class="note-box"><span class="note-text">${n}</span><button class="note-copy" data-note="${encodeURIComponent(n)}" title="নোট কপি করুন">📋 কপি</button></div>`).join('') : ''}
+        <div class="actions">
+          <button class="copy-btn" data-id="${p.id}">📋 কপি</button>
+          <button class="edit-btn" data-id="${p.id}">✏️ এডিট</button>
+          <button class="del-btn" data-id="${p.id}">🗑️ মুছুন</button>
+        </div>
+      </div>
+    `;
+    els.results.appendChild(card);
+  });
+
+  els.results.querySelectorAll('.copy-btn').forEach(btn => btn.addEventListener('click', () => { const p = allDocs.find(x => x.id === btn.getAttribute('data-id')); if (p) copyProduct(p); }));
+  els.results.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', () => { const p = allDocs.find(x => x.id === btn.getAttribute('data-id')); if (p) openPanel('edit', p); }));
+  els.results.querySelectorAll('.del-btn').forEach(btn => btn.addEventListener('click', () => askDelete(btn.getAttribute('data-id'))));
+  els.results.querySelectorAll('.note-copy').forEach(btn => btn.addEventListener('click', () => copyText(decodeURIComponent(btn.getAttribute('data-note')), 'নোট কপি হয়েছে')));
+}
+
+els.searchBox.addEventListener('input', render);
+els.sortSelect.addEventListener('change', render);
+
+// ---------- exports (libraries lazy-loaded on demand) ----------
+const loadedScripts = {};
+function loadScriptOnce(src) {
+  if (loadedScripts[src]) return loadedScripts[src];
+  loadedScripts[src] = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = () => { delete loadedScripts[src]; reject(new Error('load failed: ' + src)); };
+    document.head.appendChild(s);
+  });
+  return loadedScripts[src];
+}
+
+document.getElementById('exportExcel').addEventListener('click', async () => {
+  const btn = document.getElementById('exportExcel');
+  const original = btn.textContent;
+  btn.textContent = 'লোড হচ্ছে...';
+  btn.disabled = true;
+  try {
+    await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+    const rows = allDocs.map(p => ({
+      "প্রোডাক্ট": p.name, "বিভাগ": p.category || '', "অরিজিনাল প্রাইস": p.original ?? '',
+      "সেলিং প্রাইস": p.selling ?? '', "প্রফিট": p.profit ?? '', "ফ্রি ডেলিভারি প্রফিট": p.freeDeliveryProfit ?? '',
+      "নোট": (p.notes && p.notes.length) ? p.notes.join(' | ') : ''
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Products");
+    XLSX.writeFile(wb, "shp-bazar-products.xlsx");
+  } catch (e) {
+    console.error('Excel export failed:', e);
+    showToast('এক্সপোর্ট করা যায়নি, আবার চেষ্টা করুন');
+  } finally {
+    btn.textContent = original;
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('exportPdf').addEventListener('click', async () => {
+  const btn = document.getElementById('exportPdf');
+  const original = btn.textContent;
+  btn.textContent = 'লোড হচ্ছে...';
+  btn.disabled = true;
+  try {
+    await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js');
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text("SHP Bazar Reseller - Product List", 14, 15);
+    const body = allDocs.map(p => [p.name, p.category || '', p.original ?? '-', p.selling ?? '-', p.profit ?? '-', p.freeDeliveryProfit ?? '-']);
+    doc.autoTable({ head: [["Product", "Category", "Original", "Selling", "Profit", "Free Delivery Profit"]], body, startY: 22, styles: { fontSize: 8 } });
+    doc.save("shp-bazar-products.pdf");
+  } catch (e) {
+    console.error('PDF export failed:', e);
+    showToast('এক্সপোর্ট করা যায়নি, আবার চেষ্টা করুন');
+  } finally {
+    btn.textContent = original;
+    btn.disabled = false;
+  }
+});
+
+// ---------- backup / restore ----------
+els.backupBtn.addEventListener('click', () => {
+  const payload = { exportedAt: new Date().toISOString(), products: allDocs, logs: loadLogs() };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'shp-bazar-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('ব্যাকআপ ডাউনলোড হয়েছে');
+});
+els.restoreBtn.addEventListener('click', () => els.restoreFile.click());
+els.restoreFile.addEventListener('change', () => {
+  const file = els.restoreFile.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let parsed;
+    try { parsed = JSON.parse(e.target.result); }
+    catch (err) { alert('ফাইলটা সঠিক ব্যাকআপ ফাইল না'); els.restoreFile.value = ''; return; }
+    const incomingProducts = Array.isArray(parsed) ? parsed : parsed.products;
+    if (!Array.isArray(incomingProducts)) { alert('ফাইলে প্রোডাক্ট ডেটা পাওয়া যায়নি'); els.restoreFile.value = ''; return; }
+    showConfirm('ব্যাকআপ রিস্টোর করবেন?', `এই ফাইলে ${incomingProducts.length} টি প্রোডাক্ট আছে। এটা বর্তমান লিস্টের সাথে প্রতিস্থাপিত হবে।`, 'রিস্টোর করুন', () => {
+      const now = Date.now();
+      const normalized = incomingProducts.map(p => ({ ...p, id: p.id || uid(), updatedAt: now, synced: false }));
+      saveProductsLocal(normalized);
+      allDocs = normalized;
+      if (parsed.logs && Array.isArray(parsed.logs)) saveLogs(parsed.logs);
+      addLog('restore', `${normalized.length} টি প্রোডাক্ট ব্যাকআপ থেকে রিস্টোর করা হয়েছে`);
+      showToast('রিস্টোর সম্পন্ন হয়েছে');
+      normalized.forEach(p => queuePending({ type: 'upsert', id: p.id, data: p }));
+      render();
+      flushPending();
+    });
+    els.restoreFile.value = '';
+  };
+  reader.readAsText(file);
+});
+
+// ---------- history ----------
+function formatTime(ts) {
+  try { return new Date(ts).toLocaleString('bn-BD', { dateStyle: 'medium', timeStyle: 'short' }); }
+  catch (e) { return new Date(ts).toLocaleString(); }
+}
+const ACTION_LABEL = { add: 'যোগ করা হয়েছে', edit: 'এডিট করা হয়েছে', delete: 'মুছে ফেলা হয়েছে', restore: 'রিস্টোর করা হয়েছে', sync: 'সিঙ্ক হয়েছে' };
+function renderHistory() {
+  const logs = loadLogs();
+  if (logs.length === 0) { els.logList.innerHTML = '<div class="log-empty">এখনো কোনো অ্যাক্টিভিটি নেই</div>'; return; }
+  els.logList.innerHTML = logs.map(l => `
+    <div class="log-entry">
+      <span class="tag ${l.action}">${ACTION_LABEL[l.action] || l.action}</span>${l.name || ''}
+      <span class="time">${formatTime(l.ts)}</span>
+    </div>
+  `).join('');
+}
+els.historyBtn.addEventListener('click', () => { renderHistory(); els.historyBackdrop.classList.add('open'); });
+els.closeHistoryBtn.addEventListener('click', () => els.historyBackdrop.classList.remove('open'));
+els.historyBackdrop.addEventListener('click', (e) => { if (e.target === els.historyBackdrop) els.historyBackdrop.classList.remove('open'); });
+
+// ---------- cloud sync (Supabase, background, best-effort) ----------
+function buildResetProducts() {
+  return SEED_PRODUCTS.map((p, i) => ({
+    id: RESET_ID_PREFIX + i,
+    ...p,
+    notes: [templateNoteText(p.name, p.selling)],
+    updatedAt: RESET_TS,
+    synced: false
+  }));
+}
+function applyLocalReset() {
+  const resetProducts = buildResetProducts();
+  saveProductsLocal(resetProducts);
+  savePending([]);
+  saveTombstones([]);
+  pendingQueue = resetProducts.map(p => ({ type: 'upsert', id: p.id, data: p }));
+  savePending(pendingQueue);
+  localStorage.setItem(RESET_MARKER_KEY, 'done');
+  addLog('restore', `${resetProducts.length} টি প্রোডাক্ট দিয়ে লিস্ট রিসেট করা হয়েছে`);
+  return resetProducts;
+}
+
+function mapProductToDb(p) {
+  return {
+    id: p.id,
+    name: p.name,
+    category: p.category,
+    original: p.original,
+    selling: p.selling,
+    profit: p.profit,
+    free_delivery_profit: p.freeDeliveryProfit,
+    notes: p.notes || [],
+    image: p.image,
+    updated_at: p.updatedAt
+  };
+}
+function mapProductFromDb(r) {
+  return {
+    id: r.id,
+    name: r.name,
+    category: r.category,
+    original: r.original,
+    selling: r.selling,
+    profit: r.profit,
+    freeDeliveryProfit: r.free_delivery_profit,
+    notes: r.notes || [],
+    image: r.image,
+    updatedAt: r.updated_at
+  };
+}
+
+function createSupabaseDb() {
+  if (typeof window.supabase === 'undefined' || typeof window.supabase.createClient !== 'function') return null;
+  let client;
+  try { client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+  catch (e) { console.error('Supabase client init failed:', e); return null; }
+
+  function debounce(fn, ms) {
+    let t = null;
+    return (...args) => {
+      if (t) clearTimeout(t);
+      t = setTimeout(() => fn(...args), ms);
+    };
+  }
+
+  function collection(name) {
+    return {
+      doc(id) {
+        return {
+          async set(data) {
+            const { error } = await client.from(name).upsert(mapProductToDb({ id, ...data }));
+            if (error) throw error;
+          },
+          async delete() {
+            const { error } = await client.from(name).delete().eq('id', id);
+            if (error) throw error;
+          }
+        };
+      },
+      async upsertMany(items) {
+        if (items.length === 0) return;
+        const { error } = await client.from(name).upsert(items.map(mapProductToDb));
+        if (error) throw error;
+      },
+      async deleteMany(ids) {
+        if (ids.length === 0) return;
+        const { error } = await client.from(name).delete().in('id', ids);
+        if (error) throw error;
+      },
+      async get() {
+        const { data, error } = await client.from(name).select('*');
+        if (error) throw error;
+        return { docs: (data || []).map(r => ({ id: r.id, data: () => mapProductFromDb(r) })) };
+      },
+      onSnapshot(cb, errCb) {
+        const fetchAndEmit = () => collection(name).get().then(cb).catch(err => { if (errCb) errCb(err); });
+        fetchAndEmit();
+        const debouncedFetch = debounce(fetchAndEmit, 400);
+        const channel = client.channel(name + '_changes')
+          .on('postgres_changes', { event: '*', schema: 'public', table: name }, debouncedFetch)
+          .subscribe();
+        return () => client.removeChannel(channel);
+      }
+    };
+  }
+  return { collection };
+}
+
+async function initialSyncPush() {
+  try {
+    const snap = await db.collection('products').get();
+    if (snap.docs.length === 0 && allDocs.length > 0) {
+      await db.collection('products').upsertMany(allDocs.map(stripInternal));
+      allDocs = allDocs.map(p => ({ ...p, synced: true }));
+      saveProductsLocal(allDocs);
+    }
+  } catch (e) { console.error('Initial sync push failed:', e); }
+}
+
+function mergeRemoteSnapshot(snap) {
+  const tombstones = loadTombstones();
+  const remoteDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const remoteIds = new Set(remoteDocs.map(d => d.id));
+  const pendingUpsertIds = new Set(pendingQueue.filter(o => o.type === 'upsert').map(o => o.id));
+
+  // drop local docs that are confirmed-synced but no longer exist remotely (deleted elsewhere)
+  allDocs = allDocs.filter(p => remoteIds.has(p.id) || pendingUpsertIds.has(p.id) || p.synced === false);
+
+  remoteDocs.forEach(remote => {
+    const tomb = tombstones.find(t => t.id === remote.id);
+    if (tomb && (remote.updatedAt || 0) <= tomb.deletedAt) {
+      db.collection('products').doc(remote.id).delete().catch(() => {});
+      return;
+    }
+    const idx = allDocs.findIndex(p => p.id === remote.id);
+    if (idx === -1) {
+      allDocs.push({ ...remote, synced: true });
+    } else {
+      const local = allDocs[idx];
+      if ((remote.updatedAt || 0) > (local.updatedAt || 0)) {
+        allDocs[idx] = { ...remote, synced: true };
+      } else if (local.synced === false) {
+        // local unsynced edit is newer or equal — leave local, it will push via pending/direct
+      } else {
+        allDocs[idx] = { ...local, synced: true };
+      }
+    }
+  });
+
+  saveProductsLocal(allDocs);
+  render();
+}
+
+function waitForGlobal(checkFn, timeoutMs) {
+  return new Promise(resolve => {
+    const start = Date.now();
+    (function poll() {
+      if (checkFn()) return resolve(true);
+      if (Date.now() - start > timeoutMs) return resolve(false);
+      setTimeout(poll, 50);
+    })();
+  });
+}
+
+(async function init() {
+  if (localStorage.getItem(RESET_MARKER_KEY) !== 'done') {
+    allDocs = applyLocalReset();
+  } else {
+    allDocs = loadProducts();
+  }
+  render();
+
+  try {
+    await waitForGlobal(() => typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function', 4000);
+    db = createSupabaseDb();
+    if (!db) { updateSyncChip(); return; }
+    updateSyncChip();
+    await initialSyncPush();
+    await flushPending();
+    db.collection('products').onSnapshot(
+      (snap) => mergeRemoteSnapshot(snap),
+      (err) => { console.error('Sync error:', err); }
+    );
+    window.addEventListener('online', () => flushPending());
+  } catch (e) {
+    console.error('DB init failed:', e);
+    updateSyncChip();
+  }
+})();
+</script>
+
+</body>
+</html>
